@@ -12,7 +12,7 @@ from .utils_aug import center_crop, resize
 
 def load_dataset(dataset_path, train_own_data, train_ratio):
     types       = 0
-    train_path  = os.path.join(dataset_path, 'images_background')
+    train_path  = dataset_path
     lines       = []
     labels      = []
     

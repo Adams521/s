@@ -33,6 +33,9 @@ def fit_one_epoch(model_train, model, loss, loss_history, optimizer, epoch, epoc
         optimizer.zero_grad()
         if not fp16:
             outputs = model_train(images)
+            
+            # print("images",images.shape,targets.shape)
+            # print("outputs:",outputs.shape)
             output  = loss(outputs, targets)
 
             output.backward()
@@ -40,7 +43,9 @@ def fit_one_epoch(model_train, model, loss, loss_history, optimizer, epoch, epoc
         else:
             from torch.cuda.amp import autocast
             with autocast():
+                print("images",images.shape,targets.shape)
                 outputs = model_train(images)
+                print("outputs:",outputs.shape)
                 output  = loss(outputs, targets)
             #----------------------#
             #   反向传播
@@ -78,7 +83,10 @@ def fit_one_epoch(model_train, model, loss, loss_history, optimizer, epoch, epoc
                 targets = targets.cuda(local_rank)
                 
             optimizer.zero_grad()
+            
+            # print("images",images.shape,targets.shape)
             outputs = model_train(images)
+            # print("outputs.shape",outputs.shape)
             output  = loss(outputs, targets)
 
             equal       = torch.eq(torch.round(nn.Sigmoid()(outputs)), targets)

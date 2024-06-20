@@ -17,11 +17,14 @@ class Siamese(object):
         #   使用自己训练好的模型进行预测一定要修改model_path
         #   model_path指向logs文件夹下的权值文件
         #-----------------------------------------------------#
-        "model_path"        : 'model_data/Omniglot_vgg.pth',
+        # "model_path"        : '/home/hozon/bug/Siamese-pytorch/logs/convnext_att/best_epoch_weights.pth',
+        "model_path"        : '/home/hozon/bug/Siamese-pytorch/logs/convnext/best_epoch_weights.pth',
+        # model = resnext50_32x4d(pretrained=True)
+
         #-----------------------------------------------------#
         #   输入图片的大小。
         #-----------------------------------------------------#
-        "input_shape"       : [105, 105],
+        "input_shape"       : [256, 256],
         #--------------------------------------------------------------------#
         #   该变量用于控制是否使用letterbox_image对输入图像进行不失真的resize
         #   否则对图像进行CenterCrop

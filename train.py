@@ -8,7 +8,7 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
 
-from nets.siamese import Siamese
+from nets.siamese import Siamese, ContrastiveLoss
 from utils.callbacks import LossHistory
 from utils.dataloader import SiameseDataset, dataset_collate
 from utils.utils import (download_weights, get_lr_scheduler, load_dataset,
@@ -45,11 +45,11 @@ if __name__ == "__main__":
     #----------------------------------------------------#
     #   数据集存放的路径
     #----------------------------------------------------#
-    dataset_path    = "datasets"
+    dataset_path    = "split_data"
     #----------------------------------------------------#
     #   输入图像的大小，默认为105,105,3
     #----------------------------------------------------#
-    input_shape     = [105, 105]
+    input_shape     = [256, 256]
     #----------------------------------------------------#
     #   当训练Omniglot数据集时设置为False
     #   当训练自己的数据集时设置为True
@@ -57,7 +57,7 @@ if __name__ == "__main__":
     #   训练自己的数据和Omniglot数据格式不一样。
     #   详情可看README.md
     #----------------------------------------------------#
-    train_own_data  = False
+    train_own_data  = True
     #-------------------------------#
     #   用于指定是否使用VGG预训练权重
     #   有两种获取方式
@@ -109,8 +109,8 @@ if __name__ == "__main__":
     #   batch_size      每次输入的图片数量
     #------------------------------------------------------#
     Init_Epoch          = 0
-    Epoch               = 100
-    batch_size          = 32
+    Epoch               = 230
+    batch_size          = 8
     
     #------------------------------------------------------------------#
     #   其它训练参数：学习率、优化器、学习率下降有关
@@ -122,6 +122,7 @@ if __name__ == "__main__":
     #   Min_lr          模型的最小学习率，默认为最大学习率的0.01
     #------------------------------------------------------------------#
     Init_lr             = 1e-2
+    # Init_lr             = 1e-3
     Min_lr              = Init_lr * 0.01
     #------------------------------------------------------------------#
     #   optimizer_type  使用到的优化器种类，可选的有adam、sgd
@@ -134,6 +135,7 @@ if __name__ == "__main__":
     optimizer_type      = "sgd"
     momentum            = 0.9
     weight_decay        = 5e-4
+    # weight_decay        = 0
     #------------------------------------------------------------------#
     #   lr_decay_type   使用到的学习率下降方式，可选的有'step'、'cos'
     #------------------------------------------------------------------#
@@ -145,13 +147,15 @@ if __name__ == "__main__":
     #------------------------------------------------------------------#
     #   save_dir        权值与日志文件保存的文件夹
     #------------------------------------------------------------------#
-    save_dir            = 'logs'
+    save_dir            = 'logs/convnext'
+    # if (os.)
+    os.makedirs(save_dir, exist_ok=True)
     #------------------------------------------------------------------#
     #   num_workers     用于设置是否使用多线程读取数据，1代表关闭多线程
     #                   开启后会加快数据读取速度，但是会占用更多内存
     #                   在IO为瓶颈的时候再开启多线程，即GPU运算速度远大于读取图片的速度。
     #------------------------------------------------------------------#
-    num_workers         = 4
+    num_workers         = 8
 
     #------------------------------------------------------#
     #   设置用到的显卡
@@ -212,6 +216,7 @@ if __name__ == "__main__":
     #   获得损失函数
     #----------------------#
     loss = nn.BCEWithLogitsLoss()
+    # loss = ContrastiveLoss()
     #----------------------#
     #   记录Loss
     #----------------------#
@@ -254,7 +259,7 @@ if __name__ == "__main__":
     #----------------------------------------------------#
     #   训练集和验证集的比例。
     #----------------------------------------------------#
-    train_ratio = 0.9
+    train_ratio = 0.7
     train_lines, train_labels, val_lines, val_labels = load_dataset(dataset_path, train_own_data, train_ratio)
     num_train   = len(train_lines)
     num_val     = len(val_lines)

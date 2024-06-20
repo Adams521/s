@@ -71,8 +71,9 @@ class SiameseDataset(Dataset):
 
         image_indexes = random.sample(range(0, len(selected_path)), 1)
         batch_images_path.append(selected_path[image_indexes[0]])
-        
+        # print("batch_images_path:",batch_images_path)
         images, labels = self._convert_path_list_to_images_and_labels(batch_images_path)
+        # print("label:",labels)
         return images, labels
 
     def _convert_path_list_to_images_and_labels(self, path_list):
